@@ -23,16 +23,31 @@ public class UserDao implements IUserDao{
         try {
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
-            System.out.println("Connection successful");
+            System.out.println("Connection successful!!!!");
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
-            System.out.println("Error");
+            System.out.println("Error!!!!");
         }
         return connection;
     }
 
     @Override
-    public void insertUser(User users) throws SQLException {
+    public void insertUser(User users) {
+        System.out.println(INSERT_USERS_SQL);
+        try (
+                Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement(INSERT_USERS_SQL)
+                )
+        {
+            statement.setString(1, users.getName());
+            statement.setString(2, users.getEmail());
+            statement.setString(3, users.getCountry());
+            System.out.println(statement);
+            statement.executeUpdate();
+            System.out.println("INSERT THANH CONG");
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
 
     }
 
@@ -55,10 +70,10 @@ public class UserDao implements IUserDao{
                 String address = resultSet.getString("address");
                 User user = new User(id, name, email, address);
                 users.add(user);
-
-            } System.out.println("Da chay ALO ALO");
+            }
+            System.out.println("Da chay ALO ALO!!!!");
         } catch (SQLException e) {
-            System.err.println("ERROR!!!");
+            System.err.println("ERROR!!!!");
         }
         ;
 
@@ -77,7 +92,10 @@ public class UserDao implements IUserDao{
     }
 
     public static void main(String[] args) {
+        User users = new User(1, "alo", "alo@yahoo", "ALO" );
         UserDao userDao = new UserDao();
-        userDao.selectAllUser();
+
+        userDao.insertUser(users);
+
     }
 }
