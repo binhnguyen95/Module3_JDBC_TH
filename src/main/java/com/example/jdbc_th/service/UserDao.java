@@ -53,7 +53,25 @@ public class UserDao implements IUserDao{
 
     @Override
     public User selectUser(int id) {
-        return null;
+        User user = null;
+        try (
+                Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement(SELECT_USER_BY_ID);)
+        {
+            statement.setInt(1, id);
+            System.out.println(statement);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                String email = resultSet.getString("email");
+                String country = resultSet.getString("country");
+                user = new User(id, name, email, country);
+            }
+            System.out.println("CHAY THANH CONG");
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+        return user;
     }
 
     @Override
@@ -61,37 +79,59 @@ public class UserDao implements IUserDao{
         List<User> users = new ArrayList<>();
         try(
                 Connection connection = getConnection();
-                PreparedStatement statement = connection.prepareStatement(SELECT_ALL_USERS);) {
+                PreparedStatement statement = connection.prepareStatement(SELECT_ALL_USERS);)
+        {
+            System.out.println(statement);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
                 String email = resultSet.getString("email");
-                String address = resultSet.getString("address");
-                User user = new User(id, name, email, address);
+                String country = resultSet.getString("country");
+                User user = new User(id, name, email, country);
                 users.add(user);
             }
             System.out.println("Da chay ALO ALO!!!!");
         } catch (SQLException e) {
-            System.err.println("ERROR!!!!");
+            System.err.println(e);
         }
-        ;
-
-
         return users;
     }
 
     @Override
     public boolean deleteUser(int id) throws SQLException {
-        return false;
+        boolean rowDeleted;
+        try (
+                Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement(DELETE_USERS_SQL);
+                )
+        {
+            statement.setInt(1, id);
+            rowDeleted = statement.executeUpdate() > 0;
+        }
+        return rowDeleted;
     }
 
     @Override
     public boolean updateUser(User users) throws SQLException {
-        return false;
+        boolean rowUpdated;
+        try (
+                Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement(UPDATE_USERS_SQL);
+                )
+        {
+            statement.setString(1, users.getName());
+            statement.setString(2, users.getEmail());
+            statement.setString(3, users.getCountry());
+            statement.setInt(4, users.getId());
+
+            rowUpdated = statement.executeUpdate() > 0;
+        }
+        System.out.println("SUA THANH CONG");
+        return rowUpdated;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         User users = new User(1, "alo", "alo@yahoo", "ALO" );
         UserDao userDao = new UserDao();
 
