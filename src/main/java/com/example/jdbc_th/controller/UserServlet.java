@@ -7,6 +7,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet(name = "UserServlet", value = "/users")
@@ -21,17 +22,22 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        if ( action == null) {
+        if (action == null) {
             action = "";
         }
-        switch (action) {
-            case "create":
-                createUser(request, response);
-                break;
-            case "edit":
-
-                break;
+        try {
+            switch (action) {
+                case "create":
+                    createUser(request, response);
+                    break;
+                case "edit":
+                    editUser(request, response);
+                    break;
+            }
+        } catch (SQLException e) {
+            throw new ServletException();
         }
+
     }
 
     private void createUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -45,6 +51,18 @@ public class UserServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
+    private void editUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String country = request.getParameter("country");
+
+        User editUser = new User(id, name, email, country);
+        userDAO.updateUser(editUser);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("user/edit.jsp");
+        request.setAttribute("alo", "User edited successful!");
+        dispatcher.forward(request, response);
+}
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -57,6 +75,7 @@ public class UserServlet extends HttpServlet {
                 showCreateForm(request, response);
                 break;
             case "edit":
+                showEditForm(request, response);
                 break;
             case "delete":
                 break;
@@ -66,8 +85,19 @@ public class UserServlet extends HttpServlet {
         }
     }
 
+
     private void showCreateForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher("user/create.jsp");
+        dispatcher.forward(request, response);
+    }
+
+
+
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        User users = userDAO.selectUser(id);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("user/edit.jsp");
+        request.setAttribute("user", users);
         dispatcher.forward(request, response);
     }
 
