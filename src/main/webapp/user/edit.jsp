@@ -50,11 +50,11 @@
       </tr>
     </table>
 
-    <p>
+    <h3>
       <c:if test='${alo != null}'>
         <span style="color: #12faf5"> ${alo} </span>
       </c:if>
-    </p>
+    </h3>
 
   </form>
 </div>
