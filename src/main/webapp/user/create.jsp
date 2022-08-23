@@ -11,6 +11,11 @@
   <h2>
     <a href="users?action=users">List All Users</a>
   </h2>
+  <p>
+    <c:if test='${alo != null}'>
+      <span style="color: #12faf5"> ${alo} </span>
+    </c:if>
+  </p>
 </center>
 <div align="center">
   <form method="post">

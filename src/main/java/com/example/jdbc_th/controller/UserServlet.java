@@ -41,6 +41,7 @@ public class UserServlet extends HttpServlet {
         User users = new User(name, email, country);
         userDAO.insertUser(users);
         RequestDispatcher dispatcher = request.getRequestDispatcher("user/create.jsp");
+        request.setAttribute("alo", "New user was created!");
         dispatcher.forward(request, response);
     }
 
