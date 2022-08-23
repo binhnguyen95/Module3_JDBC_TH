@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDao implements IUserDao{
+public class UserDAO implements IUserDAO {
     private final String jdbcURL = "jdbc:mysql://localhost:3306/JDBC_TH";
     private final String jdbcUsername = "root";
     private final String jdbcPassword = "chetdicon";
@@ -131,11 +131,4 @@ public class UserDao implements IUserDao{
         return rowUpdated;
     }
 
-    public static void main(String[] args) throws SQLException {
-        User users = new User(1, "alo", "alo@yahoo", "ALO" );
-        UserDao userDao = new UserDao();
-
-        userDao.insertUser(users);
-
-    }
 }
